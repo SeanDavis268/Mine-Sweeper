@@ -1,14 +1,18 @@
 from tkinter import *
 from math import *
 from random import randrange
+
+
 #print("yeet")
 class startUp():
     def __init__(self):
         self.frame=Tk()
         self.size=0
+
         Label(self.frame,text="pick your board size").pack()
         Button(self.frame,text="32", command=lambda:choice(32,self.frame)).pack(side=LEFT)
         Button(self.frame,text="64", command=lambda:choice(64,self.frame)).pack(side=LEFT)
+
         self.frame.mainloop()
 
 def choice(size,root):
@@ -26,6 +30,8 @@ class mainWin():
         self.root=Tk() #create window
         self.size=size
         self.score=0
+        global landMine
+        landMine=PhotoImage(file='minesweeperMine.png')
         Label(self.root, text='YEET').pack()
         #packing
         packer(self.size,self.root)
@@ -61,14 +67,20 @@ def packer(size,root):
 class Mine():
 
     def __init__(self,root,pos,active=False):
+
         """this is where i left off, im working on a way
         to make random mines bombs"""
         self.pos=pos
         self.root=root
         self.active=active
-        Button(self.root, text=str(self.pos), command=lambda:bombClick(self.active), height=2, width=3).pack(side=LEFT)
 
-def bombClick(active):
+        self.image=landMine
+        self.button=Button(self.root, text=str(self.pos), command=lambda:bombClick(self.button,self.active), height=2, width=3, image=self.image )
+        self.button.image(self.image)
+        self.button.pack(side=LEFT)
+
+def bombClick(obj,active):
+    obj.config(relief=SUNKEN)
     if active==True:
         print("game over function goes here")
     else:
