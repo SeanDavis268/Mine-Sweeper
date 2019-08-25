@@ -8,12 +8,20 @@ class startUp():
     def __init__(self):
         self.frame=Tk()
         self.size=0
-
         Label(self.frame,text="pick your board size").pack()
         Button(self.frame,text="32", command=lambda:choice(32,self.frame)).pack(side=LEFT)
         Button(self.frame,text="64", command=lambda:choice(64,self.frame)).pack(side=LEFT)
+        #below is the difficulty settings
+        global difficulty
+        difficulty=IntVar()
+        Radiobutton(self.frame,variable=difficulty, value=15,text='easy').pack()
+        Radiobutton(self.frame,variable=difficulty, value=25,text='medium').pack()
+        Radiobutton(self.frame,variable=difficulty, value=33,text='hard').pack()
+
 
         self.frame.mainloop()
+
+
 
 def choice(size,root):
     """should be a method of startUp but for some reason the buttons won't recognise it
@@ -21,8 +29,9 @@ def choice(size,root):
     """
     startUp.size=size
     print(startUp.size)
-    mainWin(startUp.size)
     root.destroy()
+    mainWin(startUp.size)
+
 #############################################
 #now for the main window
 class mainWin():
@@ -30,11 +39,19 @@ class mainWin():
         self.root=Tk() #create window
         self.size=size
         self.score=0
-        global landMine
-        landMine=PhotoImage(file='minesweeperMine.png')
-        Label(self.root, text='YEET').pack()
+        global fuck
+        fuck=PhotoImage(file='minesweeperMine.png')
+
+
+        Label(self.root,text='fuuuuuuck').pack()
         #packing
         packer(self.size,self.root)
+        self.root.mainloop()
+
+
+
+
+
 
 def packer(size,root):
     """Part of mainWin
@@ -50,8 +67,11 @@ def packer(size,root):
     layer9=Frame(root)
     layerList=[layer1,layer2,layer3,layer4,layer5,layer6,layer7,layer8,layer9]
     square=int(sqrt(size))
-    bombList=bombNum(size) #this holds what pos are bombs, bombs are active when packed and match one of these pos's
+    global difficulty
+    bombList=bombNum(size,difficulty) #this holds what pos are bombs, bombs are active when packed and match one of these pos's
     position=0
+
+
     for i in range(square):
         layer=layerList[i]
 
@@ -68,16 +88,19 @@ class Mine():
 
     def __init__(self,root,pos,active=False):
 
-        """this is where i left off, im working on a way
-        to make random mines bombs"""
+        """This is the button that acts as the mines, either active or inactive"""
         self.pos=pos
         self.root=root
         self.active=active
+        global fuck
+        self.image=fuck
+        Mine.creator(self.root,self.image,self.pos,self.active)
+        #self.button=Button(self.root, text=str(self.pos), command=lambda:bombClick(self.button,self.active), height=2, width=3 )
 
-        self.image=landMine
-        self.button=Button(self.root, text=str(self.pos), command=lambda:bombClick(self.button,self.active), height=2, width=3, image=self.image )
-        self.button.image(self.image)
-        self.button.pack(side=LEFT)
+        #self.button.pack(side=LEFT)
+    def creator(root,image,pos,active):
+        button=Button(root, image=image, command=lambda:bombClick(button,active) )
+        button.pack(side=LEFT)
 
 def bombClick(obj,active):
     obj.config(relief=SUNKEN)
@@ -89,16 +112,18 @@ def bombClick(obj,active):
         print("here tiles would clear and points would be added")
         print(score)
 
-def bombNum(size):
+def bombNum(size,difficulty):
     """picks random numbers to be bombs"""
     bombList=[]
-    while len(bombList)<(size/5): #makes it so 20$ are bombs
+    difficulty=difficulty.get()
+
+    while len(bombList)<(size*(difficulty/100)): #makes it so 20$ are bombs
         int=randrange(size)
         bombList.append(int)
     print(bombList)
+
     return bombList
 ##########variables
 score=0
 
-
-startUp()
+oof=startUp()
