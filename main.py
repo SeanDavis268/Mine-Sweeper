@@ -48,6 +48,9 @@ class mainWin():
         global neighborSize
         neighborSize = size #this is for the neighbors function
 
+        global clickedList
+        clickedList=[]
+
         global score
         score = 0
         #print('------------------------')
@@ -56,7 +59,9 @@ class mainWin():
         #print('DID I MAKE IT HERE--------------')
         global coveredMine
         coveredMine = PhotoImage(file = 'coveredMine.png')
-        print(coveredMine)
+        #print(coveredMine)
+        global markedMine
+        markedMine=PhotoImage(file = 'MarkedMine.png')
 
 
         scoreCard = Label(self.root,text = 'SCORE='+str(score))
@@ -160,7 +165,6 @@ def packer(size,root):
 
 
 class Mine():
-
     def __init__(self,root,pos,active=False):
 
         """This is the button that acts as the mines,
@@ -178,8 +182,13 @@ class Mine():
         button = Button(root, command = lambda:bombClick(button,active,pos))
 
         button.config(image = image)
+        button.bind('<Button-3>', lambda x:mark(button))
         button.pack(side = LEFT)
 
+
+def mark(mine):
+    global markedMine
+    mine.config(image=markedMine)
 
 def bombClick(obj,active,pos):
     '''this is the logic that decides what happens when a mine button is
@@ -188,17 +197,19 @@ def bombClick(obj,active,pos):
        left. '''
     obj.config(relief = SUNKEN)
     global victory
-
+    global clickedList
     victory = False
     if active == True: #if hit a mine
         global liveMine
         obj.config(image = liveMine)
         mainWin.destroy()
-    else:               #if a dud
+    elif  pos not in clickedList:               #if a dud
         global score
         global safeMines
+        clickedList.append(pos)
         safeMines -= 1
         score += 100
+        print(score)
         obj.config(image = '',height = 2,width = 4)
         obj.config(text = str(neighbors(pos)))
 
@@ -215,38 +226,69 @@ def neighbors(pos):
        GAME'''
     global bombList
     global neighborSize
+
     west = False
     north = False
     south = False
     east = False
     #if neighborSize==36: #small board
-    if pos == [0,6,12,18,24,30]:    #when in leftmost spot
-        west = False
+    if neighborSize==36:
+        if pos == [0,6,12,18,24,30]:    #when in leftmost spot
+            west = False
+        else:
+            if (pos-1) in bombList: #bomb to the left is active
+                west = True
+                #print(pos-1)
+    #
+        if pos in [0,1,2,3,4,5]:
+            north = False
+        else:
+            if (pos-6) in bombList: #bomb above  is active
+                #print(pos-6)
+                north = True
+    #
+        if pos in [30,31,32,33,34,35]:
+            south = False
+        else:
+            if (pos+6) in bombList: #bomb to the left is active
+                south = True
+                #print(pos+6)
+    #
+        if pos in [5,11,17,23,29,35]:
+            east = False
+        else:
+            if (pos+1) in bombList: #bomb to the right is active
+                east = True
+#####################################large board
     else:
-        if (pos-1) in bombList: #bomb to the left is active
-            west = True
-            #print(pos-1)
-#
-    if pos in [0,1,2,3,4,5]:
-        north = False
-    else:
-        if (pos-6) in bombList: #bomb above  is active
-            #print(pos-6)
-            north = True
-#
-    if pos in [30,31,32,33,34,35]:
-        south = False
-    else:
-        if (pos+6) in bombList: #bomb to the left is active
-            south = True
-            #print(pos+6)
-#
-    if pos in [5,11,17,23,29,35]:
-        east = False
-    else:
-        if (pos+1) in bombList: #bomb to the left is active
-            east = True
 
+        if pos == [0,8,16,24,32,40,48,56]:    #when in leftmost spot
+            west = False
+        else:
+            if (pos-1) in bombList: #bomb to the left is active
+                west = True
+                #print(pos-1)
+    #
+        if pos in [0,1,2,3,4,5,6,7]:
+            north = False
+        else:
+            if (pos-8) in bombList: #bomb above  is active
+                #print(pos-6)
+                north = True
+    #
+        if pos in [56,57,58,59,60,61,62,63]:
+            south = False
+        else:
+            if (pos+8) in bombList: #bomb to the left is active
+                south = True
+                #print(pos+6)
+    #
+        if pos in [7,15,23,31,39,47,55,63]:
+            east = False
+        else:
+            if (pos+1) in bombList: #bomb to the right is active
+                east = True
+    print(pos)
     neighborBombs = [west,north,east,south]
     #####################
     total = 0
